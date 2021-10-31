@@ -85,7 +85,9 @@ jobs:
       -
         name: Test
         run: |
-          docker run --rm ${{ env.TEST_TAG }}
+          docker run --rm ${{ env.TEST_TAG }} caddy version
+          docker run --rm ${{ env.TEST_TAG }} caddy build-info
+          docker run --rm ${{ env.TEST_TAG }} caddy list-modules
       - 
         name: Build and push Docker image
         uses: docker/build-push-action@v2
