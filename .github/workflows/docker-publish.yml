@@ -3,13 +3,9 @@ name: Docker Image CI
 on:
   schedule:
     - cron: '31 16 * * 1'
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 env:
-  REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
@@ -21,46 +17,67 @@ jobs:
       packages: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      
-      - name: Docker Setup QEMU
+#      - 
+#        name: Checkout repository
+#        uses: actions/checkout@v2
+      - 
+        name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v1
         with:
-          platforms: amd64,arm64
-        
-      - name: Docker Setup Buildx
+          platforms: amd64,arm64,arm/v7,arm/v6
+      -
+        name: Available platforms
+        run: echo ${{ steps.qemu.outputs.platforms }}
+      - 
+        name: Docker Setup Buildx
+        id: buildx
         uses: docker/setup-buildx-action@v1
-        
-      - name: Login to DockerHub
+      -
+        name: Inspect builder
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+      - 
+        name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request'
+      - 
+        name: Log into ghcr.io registry
+#        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract Docker metadata
+      -
+        name: Login to Quay.io
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_ROBOT_TOKEN }}
+      - 
+        name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v3
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Build and push Docker image
+      - 
+        name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
+ #         context: .
+          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v7
+ #         push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ghcr.io/kingpin/caddy-docker-cloudflaredns:latest
-            kingpin/caddy-docker-cloudflaredns:latest
+            ghcr.io/kingpin/caddy-docker-xtra:latest
+            kingpin/caddy-docker-xtra:latest
+            quay.io/caddy-docker-xtra:latest
           labels: ${{ steps.meta.outputs.labels }}
 
 #      - name: update-container-description-action
