@@ -7,7 +7,7 @@ The docker containers are built for amd64 & arm64 / aarch64.
 Its available at docker under 
 * *kingpin/caddy-docker-cloudflaredns:latest*
 * *ghcr.io/kingpin/caddy-docker-cloudflaredns:latest* 
-* *docker pull quay.io/kingpinx1/caddy-docker-xtra*
+* *quay.io/kingpinx1/caddy-docker-xtra*
 
 **docker run** : 
 
