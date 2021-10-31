@@ -7,6 +7,7 @@ on:
 
 env:
   IMAGE_NAME: ${{ github.repository }}
+  TEST_TAG: kingpin/caddy-docker-xtra:test
 
 jobs:
   build:
@@ -17,14 +18,12 @@ jobs:
       packages: write
 
     steps:
-#      - 
-#        name: Checkout repository
-#        uses: actions/checkout@v2
       - 
         name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v1
+        id: qemu
         with:
-          platforms: amd64,arm64,arm/v7,arm/v6
+          platforms: amd64,arm64
       -
         name: Available platforms
         run: echo ${{ steps.qemu.outputs.platforms }}
@@ -40,6 +39,15 @@ jobs:
           echo "Status:    ${{ steps.buildx.outputs.status }}"
           echo "Flags:     ${{ steps.buildx.outputs.flags }}"
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+#      -
+#        name: Cache Docker layers
+#        uses: actions/cache@v2
+#        id: cache
+#        with:
+#          path: /tmp/.buildx-cache
+#          key: ${{ runner.os }}-buildx-${{ github.sha }}
+#          restore-keys: |
+#            ${{ runner.os }}-buildx-
       - 
         name: Login to DockerHub
         uses: docker/login-action@v1 
@@ -66,19 +74,33 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-
+      -
+        name: Build and test docker image
+        uses: docker/build-push-action@v2
+        with:
+          platforms: linux/amd64,linux/arm64
+          load: true
+          tags: ${{ env.TEST_TAG }}
+      -
+        name: Test
+        run: |
+          docker run --rm ${{ env.TEST_TAG }}
       - 
         name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
  #         context: .
-          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
  #         push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: |
-            ghcr.io/kingpin/caddy-docker-xtra:latest
             kingpin/caddy-docker-xtra:latest
-            quay.io/caddy-docker-xtra:latest
+            ghcr.io/kingpin/caddy-docker-xtra:latest
+            quay.io/kingpinx1/caddy-docker-xtra:latest
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
 #      - name: update-container-description-action
 #        uses: christian-korneck/update-container-description-action@v1
