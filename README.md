@@ -1,5 +1,9 @@
 
 # caddy-docker-xtra
+
+[![Docker Image CI](https://github.com/KingPin/caddy-docker-xtra/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/KingPin/caddy-docker-xtra/actions/workflows/docker-publish.yml) | 
+[![Docker Repository on Quay](https://quay.io/repository/kingpinx1/caddy-docker-xtra/status "Docker Repository on Quay")](https://quay.io/repository/kingpinx1/caddy-docker-xtra) | ![Docker Pulls](https://img.shields.io/docker/pulls/kingpin/caddy-docker-xtra)
+
 Caddy webserver v2 in a docker with a lot of plugins enabled. 
 
 The docker containers are built for amd64 & arm64 / aarch64. 
