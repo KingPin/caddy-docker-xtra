@@ -5,9 +5,8 @@ on:
     - cron: '31 16 * * 1'
   workflow_dispatch:
 
-env:
-  IMAGE_NAME: ${{ github.repository }}
-  TEST_TAG: kingpin/caddy-docker-xtra:test
+#env:
+#  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build:
@@ -18,6 +17,10 @@ jobs:
       packages: write
 
     steps:
+      - 
+        name: Repo Name
+        id: repo-name
+        run: echo "::set-output name=value::$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')"
       - 
         name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v1
@@ -39,15 +42,6 @@ jobs:
           echo "Status:    ${{ steps.buildx.outputs.status }}"
           echo "Flags:     ${{ steps.buildx.outputs.flags }}"
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
-#      -
-#        name: Cache Docker layers
-#        uses: actions/cache@v2
-#        id: cache
-#        with:
-#          path: /tmp/.buildx-cache
-#          key: ${{ runner.os }}-buildx-${{ github.sha }}
-#          restore-keys: |
-#            ${{ runner.os }}-buildx-
       - 
         name: Login to DockerHub
         uses: docker/login-action@v1 
@@ -56,7 +50,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - 
         name: Log into ghcr.io registry
-#        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -69,40 +62,55 @@ jobs:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
-      - 
-        name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-
+#      - 
+#        name: Extract Docker metadata
+#        id: meta
+#        uses: docker/metadata-action@v3
+#        with:
+#          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-
       -
         name: Build and test docker image
         uses: docker/build-push-action@v2
         with:
 #          platforms: linux/amd64,linux/arm64
           load: true
-          tags: ${{ env.TEST_TAG }}
+          tags: ${{ steps.repo-name.outputs.value }}:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
       -
         name: Test
         run: |
-          docker run --rm ${{ env.TEST_TAG }} caddy version
-          docker run --rm ${{ env.TEST_TAG }} caddy build-info
-          docker run --rm ${{ env.TEST_TAG }} caddy list-modules
+          docker run --rm ${{ steps.repo-name.outputs.value }}:test caddy version
+          docker run --rm ${{ steps.repo-name.outputs.value }}:test caddy build-info
+          docker run --rm ${{ steps.repo-name.outputs.value }}:test caddy list-modules
+      - 
+        name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+#          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest'
+          scan-type: image
+          image-ref: ${{ steps.repo-name.outputs.value }}:test
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+          severity: 'MEDIUM,CRITICAL,HIGH'
+          hide-progress: false
+      - 
+        name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: 'trivy-results.sarif'
       - 
         name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
- #         context: .
           platforms: linux/amd64,linux/arm64
- #         push: ${{ github.event_name != 'pull_request' }}
           push: true
           tags: |
-            kingpin/caddy-docker-xtra:latest
-            ghcr.io/kingpin/caddy-docker-xtra:latest
-            quay.io/kingpinx1/caddy-docker-xtra:latest
-          labels: ${{ steps.meta.outputs.labels }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest
+            ghcr.io/${{ GITHUB_REPOSITORY }}:latest
+            quay.io/${{ secrets.QUAY_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest
+ #         labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
