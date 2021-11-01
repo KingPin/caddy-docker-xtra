@@ -74,7 +74,6 @@ List of modules :
 * https://github.com/abiosoft/caddy-hmac
 * https://github.com/RussellLuo/caddy-ext/ratelimit
 * https://github.com/techknowlogick/caddy-s3browser
-* https://github.com/ggicci/caddy-jwt
 * https://github.com/mastercactapus/caddy2-proxyprotocol
 * https://github.com/baldinof/caddy-supervisor
 
