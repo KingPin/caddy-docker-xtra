@@ -74,7 +74,7 @@ jobs:
         with:
 #          platforms: linux/amd64,linux/arm64
           load: true
-          tags: ${{ steps.repo-name.outputs.value }}:test
+          tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
       -
@@ -84,12 +84,24 @@ jobs:
           docker run --rm ${{ steps.repo-name.outputs.value }}:test caddy build-info
           docker run --rm ${{ steps.repo-name.outputs.value }}:test caddy list-modules
       - 
+        name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ steps.repo-name.outputs.value }}:latest
+            quay.io/${{ secrets.QUAY_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest
+ #         labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - 
         name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-#          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest'
           scan-type: image
-          image-ref: ${{ steps.repo-name.outputs.value }}:test
+          image-ref: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:test
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
@@ -100,21 +112,8 @@ jobs:
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: 'trivy-results.sarif'
-      - 
-        name: Build and push Docker image
-        uses: docker/build-push-action@v2
-        with:
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest
-            ghcr.io/${{ github.repository_owner }}/${{ steps.repo-name.outputs.value }}:latest
-            quay.io/${{ secrets.QUAY_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest
- #         labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-#      - name: update-container-description-action
+#      - 
+#         name: update-container-description-action
 #        uses: christian-korneck/update-container-description-action@v1
 #        with:
 #          destination_container_repo: kingpin/caddy-docker-cloudflaredns
