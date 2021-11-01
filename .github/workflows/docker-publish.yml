@@ -62,12 +62,6 @@ jobs:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
-#      - 
-#        name: Extract Docker metadata
-#        id: meta
-#        uses: docker/metadata-action@v3
-#        with:
-#          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-
       -
         name: Build and test docker image
         uses: docker/build-push-action@v2
@@ -84,18 +78,29 @@ jobs:
           docker run --rm docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:test caddy build-info
           docker run --rm docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:test caddy list-modules
       - 
+        name: Docker Metadata action
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest
+            quay.io/${{ secrets.QUAY_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest
+            ghcr.io/kingpin/${{ steps.repo-name.outputs.value }}:latest
+#          tags: # optional
+          flavor: latest=auto
+      - 
         name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
           platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest
-            ghcr.io/kingpin/${{ steps.repo-name.outputs.value }}:latest
-            quay.io/${{ secrets.QUAY_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest
- #         labels: ${{ steps.meta.outputs.labels }}
+#          push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          tags: ${{ steps.meta.outputs.tags }}
+#          tags: |
+#            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest
+#            ghcr.io/kingpin/${{ steps.repo-name.outputs.value }}:latest
+#            quay.io/${{ secrets.QUAY_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest
+ #         labels: ${{ steps.meta.outputs.labels }}
       - 
         name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
