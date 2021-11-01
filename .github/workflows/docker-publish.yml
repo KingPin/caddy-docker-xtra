@@ -80,9 +80,9 @@ jobs:
       -
         name: Test
         run: |
-          docker run --rm ${{ steps.repo-name.outputs.value }}:test caddy version
-          docker run --rm ${{ steps.repo-name.outputs.value }}:test caddy build-info
-          docker run --rm ${{ steps.repo-name.outputs.value }}:test caddy list-modules
+          docker run --rm docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:test caddy version
+          docker run --rm docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:test caddy build-info
+          docker run --rm docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:test caddy list-modules
       - 
         name: Build and push Docker image
         uses: docker/build-push-action@v2
