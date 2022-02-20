@@ -31,6 +31,7 @@ RUN xcaddy build \
     --with github.com/techknowlogick/caddy-s3browser \
     --with github.com/mastercactapus/caddy2-proxyprotocol \
     --with github.com/baldinof/caddy-supervisor \
+    --with github.com/mholt/caddy-l4 \
     --with github.com/caddy-dns/cloudflare
 
 
