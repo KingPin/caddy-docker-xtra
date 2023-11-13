@@ -13,7 +13,6 @@ RUN xcaddy build \
     --with github.com/caddy-dns/duckdns \
     --with github.com/caddy-dns/namecheap \
     --with github.com/caddy-dns/route53 \
-    --with github.com/mastercactapus/caddy2-proxyprotocol \
     --with github.com/mholt/caddy-dynamicdns \
     --with github.com/lolPants/caddy-requestid \
     --with github.com/hairyhenderson/caddy-teapot-module \
