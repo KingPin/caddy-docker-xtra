@@ -1,8 +1,7 @@
 FROM caddy:builder-alpine AS builder
 
 RUN xcaddy build \
-    --with github.com/greenpau/caddy-authorize \
-    --with github.com/greenpau/caddy-auth-portal \
+    --with github.com/greenpau/caddy-security \
     --with github.com/caddy-dns/digitalocean \
     --with github.com/caddy-dns/hetzner \
     --with github.com/caddy-dns/googleclouddns \

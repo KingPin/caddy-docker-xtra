@@ -13,6 +13,42 @@ Its available at docker under
 * *ghcr.io/kingpin/caddy-docker-cloudflaredns:latest* 
 * *quay.io/kingpinx1/caddy-docker-xtra*
 
+## Breaking changes (2026-05)
+
+The image is moving to semver-major Docker tags so consumers can opt out of
+breaking changes:
+
+| Tag | Plugin set | Updates |
+|---|---|---|
+| `:v1` | Frozen snapshot of the pre-cleanup image (published 2024-12-23). Includes the old `caddy-authorize`, `caddy-auth-portal`, `vrongmeal/caddygit`, `RussellLuo/caddy-ext/ratelimit`, `gamalan/caddy-tlsredis`, `abiosoft/caddy-hmac`, `abiosoft/caddy-exec`, `WingLim/caddy-webhook`. | Never rebuilt — frozen forever. |
+| `:v2` / `:latest` | Current plugin set documented in the **List of modules** section below. | Rebuilt weekly. |
+
+To stay on the old plugin set, pin one of:
+
+```
+kingpin/caddy-docker-xtra:v1
+ghcr.io/kingpin/caddy-docker-xtra:v1
+quay.io/kingpinx1/caddy-docker-xtra:v1
+```
+
+Or pin the immutable manifest digest (works on all three registries):
+
+```
+@sha256:b165698a7b164e7885e46804cc09f4e435f2b4eaba98a74c8e17a9f6ada3a47b
+```
+
+### Auth modules merged into caddy-security
+
+`greenpau/caddy-authorize` and `greenpau/caddy-auth-portal` have both been
+archived upstream and merged into a single replacement module,
+[`greenpau/caddy-security`](https://github.com/greenpau/caddy-security).
+
+If your `Caddyfile` uses `authorize { ... }` or `auth_portal { ... }`
+directives, you need to rewrite them as `security { ... }` blocks before
+moving to `:v2`. See the
+[caddy-security docs](https://github.com/greenpau/caddy-security) for the new
+syntax.
+
 **docker run** : 
 
     docker run -it --name caddy \
@@ -45,8 +81,7 @@ this is a bare basic example, you may need to modify it further to suit your set
 List of modules : 
 
 
-* https://github.com/greenpau/caddy-authorize
-* https://github.com/greenpau/caddy-auth-portal
+* https://github.com/greenpau/caddy-security
 * https://github.com/caddy-dns/cloudflare
 * https://github.com/caddy-dns/digitalocean
 * https://github.com/caddy-dns/hetzner
