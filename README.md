@@ -124,7 +124,6 @@ List of modules :
 * https://github.com/caddy-dns/duckdns
 * https://github.com/caddy-dns/namecheap
 * https://github.com/caddy-dns/route53
-* https://github.com/mastercactapus/caddy2-proxyprotocol
 * https://github.com/mholt/caddy-dynamicdns
 * https://github.com/lolPants/caddy-requestid
 * https://github.com/hairyhenderson/caddy-teapot-module
@@ -135,7 +134,6 @@ List of modules :
 * https://github.com/pteich/caddy-tlsconsul
 * https://github.com/greenpau/caddy-trace
 * https://github.com/mholt/caddy-ratelimit
-* https://github.com/techknowlogick/caddy-s3browser
-* https://github.com/mastercactapus/caddy2-proxyprotocol
 * https://github.com/baldinof/caddy-supervisor
+* https://github.com/mholt/caddy-l4
 
