@@ -7,7 +7,6 @@ RUN xcaddy build \
     --with github.com/caddy-dns/hetzner \
     --with github.com/caddy-dns/googleclouddns \
     --with github.com/caddy-dns/vultr \
-    --with github.com/caddy-dns/leaseweb \
     --with github.com/caddy-dns/gandi \
     --with github.com/caddy-dns/azure \
     --with github.com/caddy-dns/duckdns \

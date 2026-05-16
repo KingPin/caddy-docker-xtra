@@ -52,7 +52,6 @@ List of modules :
 * https://github.com/caddy-dns/hetzner
 * https://github.com/caddy-dns/googleclouddns
 * https://github.com/caddy-dns/vultr
-* https://github.com/caddy-dns/leaseweb
 * https://github.com/caddy-dns/gandi
 * https://github.com/caddy-dns/azure
 * https://github.com/caddy-dns/duckdns
