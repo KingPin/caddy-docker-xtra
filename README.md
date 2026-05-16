@@ -68,6 +68,19 @@ The directive name is still `rate_limit`, but the syntax differs: mholt's
 module is zone-based (`rate_limit { zone <name> { ... } }`). See the new
 plugin's docs for the updated configuration.
 
+### Removed unmaintained modules
+
+The following modules have been removed because they are archived, abandoned,
+or otherwise without a maintained successor:
+
+- `gamalan/caddy-tlsredis` — archived March 2024, no live fork. (`storage redis` directive.)
+- `abiosoft/caddy-hmac` — last commit May 2021, maintainer left the Caddy ecosystem.
+- `abiosoft/caddy-exec` — last commit September 2024, same maintainer.
+- `WingLim/caddy-webhook` — last release August 2021, no successor.
+
+If you depend on any of these, pin to `:v1` or the digest above. No
+replacement is shipped in `:v2`.
+
 **docker run** : 
 
     docker run -it --name caddy \
@@ -116,15 +129,11 @@ List of modules :
 * https://github.com/lolPants/caddy-requestid
 * https://github.com/hairyhenderson/caddy-teapot-module
 * https://github.com/mholt/caddy-webdav
-* https://github.com/WingLim/caddy-webhook
 * https://github.com/greenpau/caddy-git
-* https://github.com/abiosoft/caddy-exec
-* https://github.com/gamalan/caddy-tlsredis
 * https://github.com/porech/caddy-maxmind-geolocation
 * https://github.com/muety/caddy-remote-host
 * https://github.com/pteich/caddy-tlsconsul
 * https://github.com/greenpau/caddy-trace
-* https://github.com/abiosoft/caddy-hmac
 * https://github.com/mholt/caddy-ratelimit
 * https://github.com/techknowlogick/caddy-s3browser
 * https://github.com/mastercactapus/caddy2-proxyprotocol
