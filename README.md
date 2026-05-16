@@ -58,6 +58,16 @@ maintained replacement
 Caddyfile syntax for the `git { ... }` block differs between the two modules;
 see the new plugin's docs for the updated configuration.
 
+### Rate limit module replaced
+
+`RussellLuo/caddy-ext/ratelimit` (last push May 2023) has been replaced with
+the more-maintained
+[`mholt/caddy-ratelimit`](https://github.com/mholt/caddy-ratelimit).
+
+The directive name is still `rate_limit`, but the syntax differs: mholt's
+module is zone-based (`rate_limit { zone <name> { ... } }`). See the new
+plugin's docs for the updated configuration.
+
 **docker run** : 
 
     docker run -it --name caddy \
@@ -115,7 +125,7 @@ List of modules :
 * https://github.com/pteich/caddy-tlsconsul
 * https://github.com/greenpau/caddy-trace
 * https://github.com/abiosoft/caddy-hmac
-* https://github.com/RussellLuo/caddy-ext/ratelimit
+* https://github.com/mholt/caddy-ratelimit
 * https://github.com/techknowlogick/caddy-s3browser
 * https://github.com/mastercactapus/caddy2-proxyprotocol
 * https://github.com/baldinof/caddy-supervisor

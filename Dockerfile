@@ -24,7 +24,7 @@ RUN xcaddy build \
     --with github.com/pteich/caddy-tlsconsul \
     --with github.com/greenpau/caddy-trace \
     --with github.com/abiosoft/caddy-hmac \
-    --with github.com/RussellLuo/caddy-ext/ratelimit \
+    --with github.com/mholt/caddy-ratelimit \
     --with github.com/baldinof/caddy-supervisor \
     --with github.com/mholt/caddy-l4 \
     --with github.com/caddy-dns/cloudflare
