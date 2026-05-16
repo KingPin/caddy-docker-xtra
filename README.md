@@ -49,6 +49,15 @@ moving to `:v2`. See the
 [caddy-security docs](https://github.com/greenpau/caddy-security) for the new
 syntax.
 
+### Git module replaced
+
+`vrongmeal/caddygit` is archived and its README directs users to the
+maintained replacement
+[`greenpau/caddy-git`](https://github.com/greenpau/caddy-git).
+
+Caddyfile syntax for the `git { ... }` block differs between the two modules;
+see the new plugin's docs for the updated configuration.
+
 **docker run** : 
 
     docker run -it --name caddy \
@@ -98,7 +107,7 @@ List of modules :
 * https://github.com/hairyhenderson/caddy-teapot-module
 * https://github.com/mholt/caddy-webdav
 * https://github.com/WingLim/caddy-webhook
-* https://github.com/vrongmeal/caddygit/module/git
+* https://github.com/greenpau/caddy-git
 * https://github.com/abiosoft/caddy-exec
 * https://github.com/gamalan/caddy-tlsredis
 * https://github.com/porech/caddy-maxmind-geolocation

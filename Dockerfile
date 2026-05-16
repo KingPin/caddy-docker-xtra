@@ -16,7 +16,7 @@ RUN xcaddy build \
     --with github.com/hairyhenderson/caddy-teapot-module \
     --with github.com/mholt/caddy-webdav \
     --with github.com/WingLim/caddy-webhook \
-    --with github.com/vrongmeal/caddygit/module/git \
+    --with github.com/greenpau/caddy-git \
     --with github.com/abiosoft/caddy-exec \
     --with github.com/gamalan/caddy-tlsredis \
     --with github.com/porech/caddy-maxmind-geolocation \
