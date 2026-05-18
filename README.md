@@ -16,14 +16,20 @@ Its available at docker under
 ## Breaking changes (2026-05)
 
 The image is moving to semver-major Docker tags so consumers can opt out of
-breaking changes:
+breaking changes.
+
+> **Grace period:** `:latest` will not change until **2026-08-16** (90 days
+> from 2026-05-18). Until then, anyone pulling `:latest` keeps getting the
+> pre-cleanup image. On or after that date, `:latest` will be republished to
+> match `:v2`. **Pin `:v2` or `:v1` now to control your own timing.**
 
 | Tag | Plugin set | Updates |
 |---|---|---|
 | `:v1` | Frozen snapshot of the pre-cleanup image (published 2024-12-23). Includes the old `caddy-authorize`, `caddy-auth-portal`, `vrongmeal/caddygit`, `RussellLuo/caddy-ext/ratelimit`, `gamalan/caddy-tlsredis`, `abiosoft/caddy-hmac`, `abiosoft/caddy-exec`, `WingLim/caddy-webhook`. | Never rebuilt — frozen forever. |
-| `:v2` / `:latest` | Current plugin set documented in the **List of modules** section below. | Rebuilt weekly. |
+| `:v2` | Current plugin set documented in the **List of modules** section below. | Rebuilt weekly. |
+| `:latest` | **Until 2026-08-16:** same image as `:v1` (pre-cleanup, frozen). **From 2026-08-16:** same image as `:v2` (current plugin set). | Frozen during grace period; weekly thereafter. |
 
-To stay on the old plugin set, pin one of:
+To stay on the old plugin set indefinitely, pin one of:
 
 ```
 kingpin/caddy-docker-xtra:v1
@@ -36,6 +42,16 @@ Or pin the immutable manifest digest (works on all three registries):
 ```
 @sha256:b165698a7b164e7885e46804cc09f4e435f2b4eaba98a74c8e17a9f6ada3a47b
 ```
+
+To move to the new plugin set, switch to `:v2`:
+
+```
+kingpin/caddy-docker-xtra:v2
+ghcr.io/kingpin/caddy-docker-xtra:v2
+quay.io/kingpinx1/caddy-docker-xtra:v2
+```
+
+…and migrate your `Caddyfile` per the subsections below.
 
 ### Auth modules merged into caddy-security
 
