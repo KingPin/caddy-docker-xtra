@@ -87,7 +87,13 @@ jobs:
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          # Grace period (ends 2026-08-16, 90 days from 2026-05-18):
+          # :latest is intentionally NOT pushed here so existing :latest pins
+          # keep resolving to the pre-cleanup digest (b165698a...). On or after
+          # 2026-08-16, add the three :latest lines back so the weekly rebuild
+          # starts pushing the new plugin set to :latest. See README's
+          # "Breaking changes (2026-05)" section.
           tags: |
-            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:latest
-            ghcr.io/kingpin/${{ steps.repo-name.outputs.value }}:latest
-            quay.io/kingpinx1/${{ steps.repo-name.outputs.value }}:latest
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.repo-name.outputs.value }}:v2
+            ghcr.io/kingpin/${{ steps.repo-name.outputs.value }}:v2
+            quay.io/kingpinx1/${{ steps.repo-name.outputs.value }}:v2
