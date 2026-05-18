@@ -1,0 +1,94 @@
+name: Retag image (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      digest:
+        description: "Source manifest digest (must start with sha256:)"
+        required: true
+        default: "sha256:b165698a7b164e7885e46804cc09f4e435f2b4eaba98a74c8e17a9f6ada3a47b"
+      tag:
+        description: "New tag to create (e.g. v1, v2-frozen)"
+        required: true
+        default: "v1"
+
+jobs:
+  retag:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      -
+        name: Docker Setup Buildx
+        uses: docker/setup-buildx-action@v4
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Log into ghcr.io registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: Login to Quay.io
+        uses: docker/login-action@v4
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_ROBOT_TOKEN }}
+      -
+        name: Validate digest format
+        env:
+          DIGEST: ${{ inputs.digest }}
+        run: |
+          if [[ ! "$DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]; then
+            echo "ERROR: digest must match sha256:<64 hex chars>, got: $DIGEST"
+            exit 1
+          fi
+      -
+        name: Retag on Docker Hub
+        env:
+          DIGEST: ${{ inputs.digest }}
+          TAG: ${{ inputs.tag }}
+          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          docker buildx imagetools create \
+            -t "docker.io/${DOCKERHUB_USER}/caddy-docker-xtra:${TAG}" \
+            "docker.io/${DOCKERHUB_USER}/caddy-docker-xtra@${DIGEST}"
+      -
+        name: Retag on GHCR
+        env:
+          DIGEST: ${{ inputs.digest }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          docker buildx imagetools create \
+            -t "ghcr.io/kingpin/caddy-docker-xtra:${TAG}" \
+            "ghcr.io/kingpin/caddy-docker-xtra@${DIGEST}"
+      -
+        name: Retag on Quay
+        env:
+          DIGEST: ${{ inputs.digest }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          docker buildx imagetools create \
+            -t "quay.io/kingpinx1/caddy-docker-xtra:${TAG}" \
+            "quay.io/kingpinx1/caddy-docker-xtra@${DIGEST}"
+      -
+        name: Verify all three registries
+        env:
+          TAG: ${{ inputs.tag }}
+          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          echo "=== Docker Hub ==="
+          docker buildx imagetools inspect "docker.io/${DOCKERHUB_USER}/caddy-docker-xtra:${TAG}" | head -20
+          echo
+          echo "=== GHCR ==="
+          docker buildx imagetools inspect "ghcr.io/kingpin/caddy-docker-xtra:${TAG}" | head -20
+          echo
+          echo "=== Quay ==="
+          docker buildx imagetools inspect "quay.io/kingpinx1/caddy-docker-xtra:${TAG}" | head -20
